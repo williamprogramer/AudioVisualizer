@@ -39,10 +39,8 @@ namespace AudioVisualizer
 
         private void OnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
-            SolidColorBrush? visualizerBarsBrush = VisualizerBarsBrush as SolidColorBrush;
-            _visualizerBarsBrush = new CanvasSolidColorBrush(sender, visualizerBarsBrush?.Color ?? Colors.DeepSkyBlue);
-            SolidColorBrush? visualizerBackgroundBrush = VisualizerBackgroundBrush as SolidColorBrush;
-            _visualizerBackgroundBrush = new CanvasSolidColorBrush(sender, visualizerBackgroundBrush?.Color ?? Colors.Transparent);
+            _visualizerBarsBrush = new CanvasSolidColorBrush(sender, (VisualizerBarsBrush as SolidColorBrush)?.Color ?? Colors.DeepSkyBlue);
+            _visualizerBackgroundBrush = new CanvasSolidColorBrush(sender, (VisualizerBackgroundBrush as SolidColorBrush)?.Color ?? Colors.Transparent);
         }
 
         private void OnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)

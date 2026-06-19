@@ -1,19 +1,16 @@
 using NAudio.Wave;
 using NAudio.Dsp;
-using System;
 
 namespace AudioVisualizer.Services
 {
-    public sealed class NAudioService
+    internal sealed class NAudioService
     {
         private WasapiLoopbackCapture? _capture;
         private float[] _fftBuffer = new float[1024];
         private int _fftPos = 0;
         private int _fftSize = 1024;
         private int _sampleRate;
-
         public event EventHandler<float[]>? BandsAvailable;
-
         public void StartCapture()
         {
             _capture = new WasapiLoopbackCapture();
@@ -21,7 +18,6 @@ namespace AudioVisualizer.Services
             _capture.DataAvailable += OnAudioData;
             _capture.StartRecording();
         }
-
         private void OnAudioData(object? sender, WaveInEventArgs e)
         {
             int bytesPerSample = 4;
@@ -39,7 +35,6 @@ namespace AudioVisualizer.Services
                 }
             }
         }
-
         private void ProcessFFT()
         {
             Complex[] fft = new Complex[_fftSize];
@@ -79,7 +74,6 @@ namespace AudioVisualizer.Services
                 float scaled = (float)Math.Log10(1 + avg * 50f);
                 bands[b] = Math.Clamp(scaled, 0, 1);
             }
-
             BandsAvailable?.Invoke(this, bands);
         }
     }
