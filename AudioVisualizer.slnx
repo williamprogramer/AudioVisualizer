@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AudioVisualizer.SampleApp/AudioVisualizer.SampleApp.csproj">
+    <Platform Project="x86" />
+  </Project>
+  <Project Path="AudioVisualizer/AudioVisualizer.csproj" />
+</Solution>
