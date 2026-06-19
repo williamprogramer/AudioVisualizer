@@ -20,6 +20,8 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 
 ## Installation
 
+Nuget: https://www.nuget.org/packages/AudioVisualizer
+
 Install via NuGet Package Manager:
 
 ```bash
