@@ -2,6 +2,8 @@
 
 A modern WinUI 3 audio visualizer control that displays real-time audio visualization using FFT (Fast Fourier Transform) analysis. Perfect for media players, audio applications, and entertainment software on Windows.
 
+![AudioVisualizer Preview](assets/audiovisualizer_preview.gif)
+
 ## Features
 
 - 🎵 Real-time audio visualization with 16-band FFT analysis
@@ -14,22 +16,23 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 ## Requirements
 
 - Windows 10.0.17763 or later
-- .NET 8.0
-- Visual Studio 2022 or later
+- .NET 8.0 or later
 
 ## Installation
 
 Install via NuGet Package Manager:
 
 ```bash
-dotnet add package AudioVisualizer
+dotnet add package AudioVisualizer --version 1.0.0
 ```
 
 Or via Package Manager Console:
 
 ```
-Install-Package AudioVisualizer
+Install-Package AudioVisualizer -Version 1.0.0
 ```
+
+**Current stable version: 1.0.0**
 
 ## Quick Start
 
