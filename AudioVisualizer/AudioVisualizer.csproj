@@ -8,9 +8,24 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <Nullable>enable</Nullable>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <PackageId>AudioVisualizer</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>williamprogramer</Authors>
+    <Description>A WinUI 3 audio visualizer control with real-time FFT visualization using NAudio and Win2D</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/williamprogramer/AudioVisualizer</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/williamprogramer/AudioVisualizer</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>winui3;audio;visualizer;fft;naudio;win2d;windows</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
     <PackageReference Include="NAudio" Version="2.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

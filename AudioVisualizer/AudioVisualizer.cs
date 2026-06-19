@@ -7,16 +7,25 @@ using Microsoft.UI.Xaml.Media;
 
 namespace AudioVisualizer
 {
+    /// <summary>
+    /// A WinUI 3 audio visualizer control that displays real-time audio visualization using FFT analysis.
+    /// </summary>
     public sealed partial class AudioVisualizer : Control
     {
         private readonly float[] _smoothBands = new float[16];
         private float[] _latestBands = new float[16];
 
+        /// <summary>
+        /// Initializes a new instance of the AudioVisualizer control.
+        /// </summary>
         public AudioVisualizer()
         {
             DefaultStyleKey = typeof(AudioVisualizer);
         }
 
+        /// <summary>
+        /// Called when the control template is applied to initialize visualization resources.
+        /// </summary>
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
