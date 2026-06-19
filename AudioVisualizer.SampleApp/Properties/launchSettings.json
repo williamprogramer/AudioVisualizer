@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AudioVisualizer.SampleApp (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AudioVisualizer.SampleApp (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
