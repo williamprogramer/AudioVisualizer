@@ -7,7 +7,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:AudioVisualizer">
-                    <canvas:CanvasAnimatedControl x:Name="AudioVisualizerCanvas" 
+                    <canvas:CanvasAnimatedControl x:Name="AudioVisualizerCanvas"
                         HorizontalAlignment="Stretch" 
                         VerticalAlignment="Stretch" />
                 </ControlTemplate>

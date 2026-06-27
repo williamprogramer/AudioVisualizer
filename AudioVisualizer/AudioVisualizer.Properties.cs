@@ -17,6 +17,7 @@ public sealed partial class AudioVisualizer : Control
     private CanvasSolidColorBrush? _visualizerBackgroundBrush;
     private CanvasSolidColorBrush? _visualizerBarsBrush;
     private readonly NAudioService _naudioService = new();
+    private long _barsBrushColorToken;
 
     /// <summary>
     /// Identifies the VisualizerBackgroundBrush dependency property.
@@ -42,7 +43,24 @@ public sealed partial class AudioVisualizer : Control
             nameof(VisualizerBarsBrush),
             typeof(Brush),
             typeof(AudioVisualizer),
-            new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
+            new PropertyMetadata(new SolidColorBrush(Colors.Transparent), OnVisualizerBarsBrushChanged));
+
+    private static void OnVisualizerBarsBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        AudioVisualizer? visualizer = d as AudioVisualizer;
+        if (visualizer == null)
+            return;
+
+        if (e.OldValue is SolidColorBrush oldBrush)
+            oldBrush.UnregisterPropertyChangedCallback(SolidColorBrush.ColorProperty, visualizer._barsBrushColorToken);
+        if (e.NewValue is SolidColorBrush newBrush)
+        {
+            visualizer._barsBrushColorToken = newBrush.RegisterPropertyChangedCallback(
+                SolidColorBrush.ColorProperty, visualizer.OnBarsBrushColorChanged);
+            if (visualizer._visualizerBarsBrush is not null)
+                visualizer._visualizerBarsBrush.Color = newBrush.Color;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the brush color for the frequency visualization bars.
