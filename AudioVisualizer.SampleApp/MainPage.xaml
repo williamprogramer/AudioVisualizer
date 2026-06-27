@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Page
-    x:Class="AudioVisualizer_SampleApp.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:AudioVisualizer_SampleApp"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:AudioVisualizer="using:AudioVisualizer"
-    mc:Ignorable="d">
+<Page x:Class="AudioVisualizer_SampleApp.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:AudioVisualizer_SampleApp"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:AudioVisualizer="using:AudioVisualizer"
+      mc:Ignorable="d">
 
     <!--
         This is the main content area of your application.
@@ -23,8 +22,9 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <AudioVisualizer:AudioVisualizer Grid.Row="0"
-            Grid.Column="0"
-            VisualizerBackgroundBrush="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
+                                         Grid.Column="0"
+                                         VisualizerBackgroundBrush="Transparent"
+                                         Paused="False"
+                                         VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
     </Grid>
 </Page>

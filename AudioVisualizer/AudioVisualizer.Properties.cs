@@ -20,11 +20,36 @@ public sealed partial class AudioVisualizer : Control
     private long _barsBrushColorToken;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the audio visualization is paused.
+    /// </summary>
+    public bool Paused
+    {
+        get => (bool)GetValue(PausedProperty);
+        set => SetValue(PausedProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the audio visualization is paused.
+    /// </summary>
+    public static readonly DependencyProperty PausedProperty = DependencyProperty
+        .Register(nameof(Paused), typeof(bool), typeof(AudioVisualizer), new PropertyMetadata(false, OnPausedChanged));
+
+    private static void OnPausedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is AudioVisualizer visualizer && visualizer._canvas != null)
+        {
+            if (e.NewValue is bool newValue)
+            {
+                visualizer._canvas.Paused = newValue;
+            }
+        }
+    }
+
+    /// <summary>
     /// Identifies the VisualizerBackgroundBrush dependency property.
     /// </summary>
-    public static readonly DependencyProperty VisualizerBackgroundBrushProperty = DependencyProperty.Register(
-        nameof(VisualizerBackgroundBrush), typeof(Brush), typeof(AudioVisualizer),
-        new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
+    public static readonly DependencyProperty VisualizerBackgroundBrushProperty = DependencyProperty
+        .Register(nameof(VisualizerBackgroundBrush), typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
 
     /// <summary>
     /// Gets or sets the background brush for the visualizer area.
