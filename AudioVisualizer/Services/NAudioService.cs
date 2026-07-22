@@ -6,9 +6,9 @@ namespace AudioVisualizer.Services
     internal sealed class NAudioService
     {
         private WasapiLoopbackCapture? _capture;
-        private float[] _fftBuffer = new float[1024];
+        private readonly float[] _fftBuffer = new float[1024];
         private int _fftPos = 0;
-        private int _fftSize = 1024;
+        private readonly int _fftSize = 1024;
         private int _sampleRate;
         public event EventHandler<float[]>? BandsAvailable;
         public void StartCapture()

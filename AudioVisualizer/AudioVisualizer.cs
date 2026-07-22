@@ -17,6 +17,7 @@ namespace AudioVisualizer
         /// An array to store the smoothed audio frequency bands for visualization.
         /// </summary>
         private readonly float[] _smoothBands = new float[16];
+
         /// <summary>
         /// An array to store the latest audio frequency bands received from the audio service.
         /// </summary>
@@ -37,7 +38,7 @@ namespace AudioVisualizer
         {
             base.OnApplyTemplate();
             _canvas = GetTemplateChild("AudioVisualizerCanvas") as CanvasAnimatedControl;
-            if (_canvas != null)
+            if (_canvas is not null)
             {
                 _canvas.CreateResources += OnCreateResources;
                 _canvas.Update += OnUpdate;
@@ -58,6 +59,7 @@ namespace AudioVisualizer
                 _visualizerBackgroundBrush = new CanvasSolidColorBrush(canvas, (VisualizerBackgroundBrush as SolidColorBrush)?.Color ?? Colors.Transparent);
             }
         }
+
         /// <summary>
         /// Called when the VisualizerBarsBrush property changes to update the visualizer bars color.
         /// </summary>
@@ -79,6 +81,7 @@ namespace AudioVisualizer
             _visualizerBarsBrush = new CanvasSolidColorBrush(sender, (VisualizerBarsBrush as SolidColorBrush)?.Color ?? Colors.DeepSkyBlue);
             _visualizerBackgroundBrush = new CanvasSolidColorBrush(sender, (VisualizerBackgroundBrush as SolidColorBrush)?.Color ?? Colors.Transparent);
         }
+
         /// <summary>
         /// Called on each update tick to smoothly interpolate the visualizer bars based on the latest audio frequency bands.
         /// </summary>
@@ -117,6 +120,7 @@ namespace AudioVisualizer
                 ds.FillRectangle(x + spacing, y, barWidth - spacing * 2, barHeight, _visualizerBarsBrush);
             }
         }
+
         /// <summary>
         /// Linearly interpolates between two float values based on a given interpolation factor.
         /// </summary>
@@ -124,6 +128,6 @@ namespace AudioVisualizer
         /// <param name="b">The ending value.</param>
         /// <param name="t">The interpolation factor, typically between 0 and 1.</param>
         /// <returns>The interpolated value.</returns>
-        private float Lerp(float a, float b, float t) => a + (b - a) * t;
+        private static float Lerp(float a, float b, float t) => a + (b - a) * t;
     }
 }
