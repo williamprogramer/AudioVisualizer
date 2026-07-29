@@ -1,3 +1,4 @@
+using AudioVisualizer.Services;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -16,12 +17,12 @@ namespace AudioVisualizer
         /// <summary>
         /// An array to store the smoothed audio frequency bands for visualization.
         /// </summary>
-        private readonly float[] _smoothBands = new float[16];
+        private readonly float[] _smoothBands = new float[NAudioService.BandCount];
 
         /// <summary>
         /// An array to store the latest audio frequency bands received from the audio service.
         /// </summary>
-        private float[] _latestBands = new float[16];
+        private float[] _latestBands = new float[NAudioService.BandCount];
 
         /// <summary>
         /// Initializes a new instance of the AudioVisualizer control.
@@ -89,7 +90,7 @@ namespace AudioVisualizer
         /// <param name="args">The event arguments containing update information.</param>
         private void OnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
         {
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < NAudioService.BandCount; i++)
             {
                 _smoothBands[i] = Lerp(_smoothBands[i], _latestBands[i], 0.2f);
                 _smoothBands[i] = Math.Max(_smoothBands[i], 0.02f);
@@ -102,14 +103,15 @@ namespace AudioVisualizer
             float width = (float)sender.Size.Width;
             float height = (float)sender.Size.Height;
             ds.Clear(_visualizerBackgroundBrush!.Color);
-            int totalBars = 32;
+            int bandCount = NAudioService.BandCount;
+            int totalBars = bandCount * 2;
             float barWidth = width / totalBars;
             float spacing = barWidth * 0.2f;
             float centerY = height / 2f;
 
             for (int i = 0; i < totalBars; i++)
             {
-                int bandIndex = (i < 16) ? 15 - i : i - 16;
+                int bandIndex = (i < bandCount) ? bandCount - 1 - i : i - bandCount;
                 float magnitude = Math.Clamp(_smoothBands[bandIndex], 0, 1);
                 float barHeight = magnitude * height;
                 float halfHeight = barHeight / 2f;
