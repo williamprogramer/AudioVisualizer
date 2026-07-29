@@ -10,7 +10,7 @@
     <Nullable>enable</Nullable>
     <Platforms>x86;x64;ARM64</Platforms>
     <PackageId>AudioVisualizer</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>williamprogramer</Authors>
     <Description>A WinUI 3 audio visualizer control with real-time FFT visualization using NAudio and Win2D</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
