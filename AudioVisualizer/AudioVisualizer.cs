@@ -30,6 +30,7 @@ namespace AudioVisualizer
         public AudioVisualizer()
         {
             DefaultStyleKey = typeof(AudioVisualizer);
+            Unloaded += OnUnloaded;
         }
 
         /// <summary>
@@ -46,9 +47,16 @@ namespace AudioVisualizer
                 _canvas.Draw += OnDraw;
                 _canvas.ActualThemeChanged += OnActualThemeChanged;
 
+                _naudioService.BandsAvailable -= OnBandsAvailable;
                 _naudioService.BandsAvailable += OnBandsAvailable;
                 _naudioService.StartCapture();
             }
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _naudioService.BandsAvailable -= OnBandsAvailable;
+            _naudioService.StopCapture();
         }
 
         private void OnActualThemeChanged(FrameworkElement sender, object args)
