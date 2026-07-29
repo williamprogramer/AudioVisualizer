@@ -5,10 +5,12 @@ namespace AudioVisualizer.Services
 {
     internal sealed class NAudioService
     {
+        internal const int BandCount = 12;
+
         private WasapiLoopbackCapture? _capture;
-        private float[] _fftBuffer = new float[1024];
+        private readonly float[] _fftBuffer = new float[1024];
         private int _fftPos = 0;
-        private int _fftSize = 1024;
+        private readonly int _fftSize = 1024;
         private int _sampleRate;
         public event EventHandler<float[]>? BandsAvailable;
         public void StartCapture()
@@ -46,17 +48,17 @@ namespace AudioVisualizer.Services
 
             FastFourierTransform.FFT(true, (int)Math.Log2(_fftSize), fft);
 
-            float[] bands = new float[16];
-            float minF = 20f, maxF = 20000f;
-            float[] freqEdges = new float[17];
+            float[] bands = new float[BandCount];
+            float minF = 20f, maxF = 14000f;
+            float[] freqEdges = new float[BandCount + 1];
 
-            for (int i = 0; i < 17; i++)
+            for (int i = 0; i < BandCount + 1; i++)
             {
-                float t = i / 16f;
+                float t = i / (float)BandCount;
                 freqEdges[i] = minF * (float)Math.Pow(maxF / minF, t);
             }
 
-            for (int b = 0; b < 16; b++)
+            for (int b = 0; b < BandCount; b++)
             {
                 int minIndex = (int)(freqEdges[b] / (_sampleRate / (float)_fftSize));
                 int maxIndex = (int)(freqEdges[b + 1] / (_sampleRate / (float)_fftSize));

@@ -1,6 +1,16 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
   <Project Path="AudioVisualizer.SampleApp/AudioVisualizer.SampleApp.csproj">
-    <Platform Project="x86" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="Debug|Any CPU" Project="x64" />
+    <Platform Solution="Release|Any CPU" Project="x86" />
+    <Deploy Solution="*|x64" />
   </Project>
-  <Project Path="AudioVisualizer/AudioVisualizer.csproj" />
+  <Project Path="AudioVisualizer/AudioVisualizer.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="Debug|Any CPU" Project="x64" />
+  </Project>
 </Solution>
