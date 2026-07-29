@@ -6,17 +6,20 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 
 ## Features
 
-- 🎵 Real-time audio visualization with 16-band FFT analysis
-- 🎨 Customizable colors and brushes via WinUI theme resources
-- ⚡ Smooth animations using Win2D rendering
-- 📱 Responsive design that adapts to any container size
-- 🔊 System audio loopback capture support
-- 💻 Built for WinUI 3 on Windows 10+
+- Real-time WASAPI loopback capture with 12-band FFT analysis (log-spaced ~20 Hz–14 kHz)
+- Mirrored bar layout (bass in the center, highs outward; bars grow above and below center)
+- Customizable colors via WinUI theme resources, with live updates for theme and accent changes
+- `Paused` property to pause or resume the Win2D animation
+- Automatic capture rebind when the default output device changes (e.g. speakers ↔ Bluetooth)
+- Smooth animations using Win2D rendering
+- Responsive design that adapts to any container size
+- Built for WinUI 3 on Windows 10+ (x86, x64, and ARM64)
 
 ## Requirements
 
 - Windows 10.0.17763 or later
 - .NET 8.0 or later
+- A WinUI 3 host app (Windows App SDK)
 
 ## Installation
 
@@ -25,16 +28,16 @@ Nuget: https://www.nuget.org/packages/AudioVisualizer
 Install via NuGet Package Manager:
 
 ```bash
-dotnet add package AudioVisualizer --version 1.0.0
+dotnet add package AudioVisualizer --version 1.1.0
 ```
 
 Or via Package Manager Console:
 
 ```
-Install-Package AudioVisualizer -Version 1.0.0
+Install-Package AudioVisualizer -Version 1.1.0
 ```
 
-**Current stable version: 1.0.0**
+**Current stable version: 1.1.0**
 
 ## Quick Start
 
@@ -45,8 +48,9 @@ Add the visualizer to your XAML page:
     xmlns:local="using:AudioVisualizer"
     ...>
     <Grid>
-        <local:AudioVisualizer 
-            VisualizerBackgroundBrush="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        <local:AudioVisualizer
+            Paused="False"
+            VisualizerBackgroundBrush="Transparent"
             VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
     </Grid>
 </Page>
@@ -56,18 +60,31 @@ The visualizer will automatically capture system audio and display the real-time
 
 ## Customization
 
-You can customize the colors by providing WinUI theme resources:
+You can customize appearance and playback with these properties:
 
 - **VisualizerBackgroundBrush** - Background color of the visualization area
-- **VisualizerBarsBrush** - Color of the frequency bars
+- **VisualizerBarsBrush** - Color of the frequency bars (prefer a `SolidColorBrush` or theme resource for live accent/theme updates)
+- **Paused** - When `true`, pauses the Win2D animation; when `false`, resumes it
 
 Example:
 
 ```xml
-<local:AudioVisualizer 
+<local:AudioVisualizer
+    Paused="False"
     VisualizerBackgroundBrush="Black"
     VisualizerBarsBrush="Cyan" />
 ```
+
+## Audio device changes
+
+When the default Windows output device changes, the control restarts loopback capture on the new endpoint automatically. Bars should resume within a few seconds without restarting the app.
+
+## Dependencies
+
+This package targets `net8.0-windows10.0.26100.0` and brings:
+
+- NAudio 2.3.0
+- Microsoft.Graphics.Win2D 1.4.0
 
 ## License
 
