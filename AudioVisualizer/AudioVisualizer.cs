@@ -102,6 +102,17 @@ namespace AudioVisualizer
                 _visualizerBarsBrush.Color = brush.Color;
         }
 
+        /// <summary>
+        /// Called when the VisualizerBackgroundBrush color changes to update the canvas clear color.
+        /// </summary>
+        /// <param name="sender">The dependency object that triggered the change.</param>
+        /// <param name="dp">The dependency property that changed.</param>
+        private void OnBackgroundBrushColorChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (_visualizerBackgroundBrush != null && sender is SolidColorBrush brush)
+                _visualizerBackgroundBrush.Color = brush.Color;
+        }
+
         private void OnBandsAvailable(object? sender, float[] bands)
         {
             _latestBands = bands;

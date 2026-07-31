@@ -18,6 +18,7 @@ public sealed partial class AudioVisualizer : Control
     private CanvasSolidColorBrush? _visualizerBarsBrush;
     private readonly NAudioService _naudioService = new();
     private long _barsBrushColorToken;
+    private long _backgroundBrushColorToken;
 
     /// <summary>
     /// Gets or sets a value indicating whether the audio visualization is paused.
@@ -74,7 +75,28 @@ public sealed partial class AudioVisualizer : Control
     /// Identifies the VisualizerBackgroundBrush dependency property.
     /// </summary>
     public static readonly DependencyProperty VisualizerBackgroundBrushProperty = DependencyProperty
-        .Register(nameof(VisualizerBackgroundBrush), typeof(Brush), typeof(AudioVisualizer), new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
+        .Register(
+            nameof(VisualizerBackgroundBrush),
+            typeof(Brush),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(new SolidColorBrush(Colors.Transparent), OnVisualizerBackgroundBrushChanged));
+
+    private static void OnVisualizerBackgroundBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        AudioVisualizer? visualizer = d as AudioVisualizer;
+        if (visualizer == null)
+            return;
+
+        if (e.OldValue is SolidColorBrush oldBrush)
+            oldBrush.UnregisterPropertyChangedCallback(SolidColorBrush.ColorProperty, visualizer._backgroundBrushColorToken);
+        if (e.NewValue is SolidColorBrush newBrush)
+        {
+            visualizer._backgroundBrushColorToken = newBrush.RegisterPropertyChangedCallback(
+                SolidColorBrush.ColorProperty, visualizer.OnBackgroundBrushColorChanged);
+            if (visualizer._visualizerBackgroundBrush is not null)
+                visualizer._visualizerBackgroundBrush.Color = newBrush.Color;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the background brush for the visualizer area.

@@ -20,22 +20,72 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock VerticalAlignment="Center" Text="Audio source" />
-            <ComboBox x:Name="SourceModeCombo"
+        <!-- Fila de controles alineados -->
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Audio source -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock VerticalAlignment="Center" Text="Audio source"/>
+                <ComboBox x:Name="SourceModeCombo"
                       MinWidth="140"
                       SelectionChanged="OnSourceModeChanged">
-                <ComboBoxItem Content="Output" Tag="Output" IsSelected="True" />
-                <ComboBoxItem Content="Input" Tag="Input" />
-                <ComboBoxItem Content="Both" Tag="Both" />
-            </ComboBox>
-        </StackPanel>
+                    <ComboBoxItem Content="Output" Tag="Output"/>
+                    <ComboBoxItem Content="Input" Tag="Input"/>
+                    <ComboBoxItem Content="Both" Tag="Both" IsSelected="True"/>
+                </ComboBox>
+            </StackPanel>
 
+            <!-- Paused toggle -->
+            <ToggleSwitch Grid.Column="1"
+                      x:Name="PausedToggle"
+                      OffContent="Running"
+                      OnContent="Paused"
+                      VerticalAlignment="Center"
+                      Toggled="OnPausedToggled"/>
+
+            <!-- Bars -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock VerticalAlignment="Center" Text="Bars"/>
+                <ComboBox x:Name="BarsBrushCombo"
+                      MinWidth="140"
+                      SelectionChanged="OnBarsBrushChanged">
+                    <ComboBoxItem Content="Accent" Tag="Accent" IsSelected="True"/>
+                    <ComboBoxItem Content="Cyan" Tag="Cyan"/>
+                    <ComboBoxItem Content="DeepSkyBlue" Tag="DeepSkyBlue"/>
+                    <ComboBoxItem Content="White" Tag="White"/>
+                    <ComboBoxItem Content="Orange" Tag="Orange"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Background -->
+            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock VerticalAlignment="Center" Text="Background"/>
+                <ComboBox x:Name="BackgroundBrushCombo"
+                      MinWidth="140"
+                      SelectionChanged="OnBackgroundBrushChanged">
+                    <ComboBoxItem Content="Transparent" Tag="Transparent" IsSelected="True"/>
+                    <ComboBoxItem Content="Black" Tag="Black"/>
+                    <ComboBoxItem Content="White" Tag="White"/>
+                    <ComboBoxItem Content="Red" Tag="Red"/>
+                    <ComboBoxItem Content="#1A1A1A" Tag="#1A1A1A"/>
+                    <ComboBoxItem Content="#0D1B2A" Tag="#0D1B2A"/>
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+
+        <!-- Visualizer -->
         <AudioVisualizer:AudioVisualizer x:Name="Visualizer"
-                                         Grid.Row="1"
-                                         AudioSourceMode="Output"
-                                         VisualizerBackgroundBrush="Transparent"
-                                         Paused="False"
-                                         VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
+                                     Grid.Row="1"
+                                     AudioSourceMode="Both"
+                                     VisualizerBackgroundBrush="Transparent"
+                                     Paused="False"
+                                     VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
     </Grid>
+
 </Page>
