@@ -49,6 +49,7 @@ Add the visualizer to your XAML page:
     ...>
     <Grid>
         <local:AudioVisualizer
+            x:Name="Visualizer"
             Paused="False"
             VisualizerBackgroundBrush="Transparent"
             VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
@@ -70,6 +71,7 @@ Example:
 
 ```xml
 <local:AudioVisualizer
+    x:Name="Visualizer"
     Paused="False"
     VisualizerBackgroundBrush="Black"
     VisualizerBarsBrush="Cyan" />
@@ -80,7 +82,7 @@ Example:
 Subscribe to the `Error` event to learn when capture fails in a non-recoverable way (for example, start failure or exhausted device-rebind retries). Teardown failures on a dead audio endpoint are swallowed internally and do not raise this event.
 
 ```csharp
-visualizer.Error += (sender, e) =>
+Visualizer.Error += (sender, e) =>
 {
     // e.Message, e.Exception, e.IsRecoverable
 };
