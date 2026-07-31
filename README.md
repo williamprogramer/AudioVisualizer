@@ -9,7 +9,7 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 - Real-time WASAPI capture with configurable FFT bands (8 / 16 / 32 / 64, log-spaced ~20 Hz–14 kHz)
 - `AudioSourceMode` to capture system output (loopback), microphone input, or both
 - `BandCount` to choose how many frequency bands are displayed (default `Sixteen`)
-- Mirrored bar layout (bass in the center, highs outward; bars grow above and below center)
+- `VisualizationStyle` layouts: `Mirrored` (default), `BarsBottom`, `BarsTop`, `BarsLeft`, `BarsRight`, and `Circular`
 - Customizable colors via WinUI theme resources, with live updates for theme and accent changes
 - `Paused` property to pause or resume audio capture and the Win2D animation
 - Automatic capture rebind when the default output or input device changes
@@ -54,6 +54,7 @@ Add the visualizer to your XAML page:
             x:Name="Visualizer"
             AudioSourceMode="Output"
             BandCount="Sixteen"
+            VisualizationStyle="Mirrored"
             Paused="False"
             VisualizerBackgroundBrush="Transparent"
             VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
@@ -69,6 +70,7 @@ You can customize appearance, capture source, and playback with these properties
 
 - **AudioSourceMode** - Which audio to analyze: `Output` (default loopback), `Input` (microphone), or `Both` (merge with per-band maximum)
 - **BandCount** - Number of frequency bands: `Eight`, `Sixteen` (default), `ThirtyTwo`, or `SixtyFour`
+- **VisualizationStyle** - Layout: `Mirrored` (default), `BarsBottom`, `BarsTop`, `BarsLeft`, `BarsRight`, or `Circular`
 - **Paused** - When `true`, stops audio capture and pauses the Win2D animation; when `false`, resumes both
 - **VisualizerBackgroundBrush** - Background color of the visualization area
 - **VisualizerBarsBrush** - Color of the frequency bars (prefer a `SolidColorBrush` or theme resource for live accent/theme updates)
@@ -80,6 +82,7 @@ Example:
     x:Name="Visualizer"
     AudioSourceMode="Both"
     BandCount="ThirtyTwo"
+    VisualizationStyle="Circular"
     Paused="False"
     VisualizerBackgroundBrush="Black"
     VisualizerBarsBrush="Cyan" />

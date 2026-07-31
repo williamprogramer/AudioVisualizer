@@ -54,6 +54,22 @@ public sealed partial class MainPage : Page
         };
     }
 
+    private void OnVisualizationStyleChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (Visualizer is null || StyleCombo.SelectedItem is not ComboBoxItem item)
+            return;
+
+        Visualizer.VisualizationStyle = item.Tag switch
+        {
+            "BarsBottom" => AudioVisualizer.VisualizationStyle.BarsBottom,
+            "BarsTop" => AudioVisualizer.VisualizationStyle.BarsTop,
+            "BarsLeft" => AudioVisualizer.VisualizationStyle.BarsLeft,
+            "BarsRight" => AudioVisualizer.VisualizationStyle.BarsRight,
+            "Circular" => AudioVisualizer.VisualizationStyle.Circular,
+            _ => AudioVisualizer.VisualizationStyle.Mirrored
+        };
+    }
+
     private void OnBarsBrushChanged(object sender, SelectionChangedEventArgs e)
     {
         if (Visualizer is null || BarsBrushCombo.SelectedItem is not ComboBoxItem item || item.Tag is not string tag)

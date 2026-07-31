@@ -1,4 +1,5 @@
 using AudioVisualizer.Services;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -152,9 +153,35 @@ namespace AudioVisualizer
             // Snapshot so Length and indexing stay consistent if BandCount changes mid-draw.
             float[] smoothBands = _smoothBands;
             int bandCount = smoothBands.Length;
-            if (bandCount == 0)
+            if (bandCount == 0 || _visualizerBarsBrush is null)
                 return;
 
+            switch (_visualizationStyle)
+            {
+                case VisualizationStyle.BarsBottom:
+                    DrawBarsBottom(ds, smoothBands, width, height);
+                    break;
+                case VisualizationStyle.BarsTop:
+                    DrawBarsTop(ds, smoothBands, width, height);
+                    break;
+                case VisualizationStyle.BarsLeft:
+                    DrawBarsLeft(ds, smoothBands, width, height);
+                    break;
+                case VisualizationStyle.BarsRight:
+                    DrawBarsRight(ds, smoothBands, width, height);
+                    break;
+                case VisualizationStyle.Circular:
+                    DrawCircular(ds, smoothBands, width, height);
+                    break;
+                default:
+                    DrawMirrored(ds, smoothBands, width, height);
+                    break;
+            }
+        }
+
+        private void DrawMirrored(CanvasDrawingSession ds, float[] smoothBands, float width, float height)
+        {
+            int bandCount = smoothBands.Length;
             int totalBars = bandCount * 2;
             float barWidth = width / totalBars;
             float spacing = barWidth * 0.2f;
@@ -172,6 +199,118 @@ namespace AudioVisualizer
 
                 ds.FillRectangle(x + spacing, y, barWidth - spacing * 2, barHeight, _visualizerBarsBrush);
             }
+        }
+
+        private void DrawBarsBottom(CanvasDrawingSession ds, float[] smoothBands, float width, float height)
+        {
+            int bandCount = smoothBands.Length;
+            float barWidth = width / bandCount;
+            float spacing = barWidth * 0.2f;
+
+            for (int i = 0; i < bandCount; i++)
+            {
+                float magnitude = Math.Clamp(smoothBands[i], 0, 1);
+                float barHeight = magnitude * height;
+                float x = i * barWidth;
+                float y = height - barHeight;
+
+                ds.FillRectangle(x + spacing, y, barWidth - spacing * 2, barHeight, _visualizerBarsBrush);
+            }
+        }
+
+        private void DrawBarsTop(CanvasDrawingSession ds, float[] smoothBands, float width, float height)
+        {
+            int bandCount = smoothBands.Length;
+            float barWidth = width / bandCount;
+            float spacing = barWidth * 0.2f;
+
+            for (int i = 0; i < bandCount; i++)
+            {
+                float magnitude = Math.Clamp(smoothBands[i], 0, 1);
+                float barHeight = magnitude * height;
+                float x = i * barWidth;
+
+                ds.FillRectangle(x + spacing, 0, barWidth - spacing * 2, barHeight, _visualizerBarsBrush);
+            }
+        }
+
+        private void DrawBarsLeft(CanvasDrawingSession ds, float[] smoothBands, float width, float height)
+        {
+            int bandCount = smoothBands.Length;
+            float rowHeight = height / bandCount;
+            float spacing = rowHeight * 0.2f;
+
+            for (int i = 0; i < bandCount; i++)
+            {
+                float magnitude = Math.Clamp(smoothBands[i], 0, 1);
+                float barWidth = magnitude * width;
+                float y = i * rowHeight;
+
+                ds.FillRectangle(0, y + spacing, barWidth, rowHeight - spacing * 2, _visualizerBarsBrush);
+            }
+        }
+
+        private void DrawBarsRight(CanvasDrawingSession ds, float[] smoothBands, float width, float height)
+        {
+            int bandCount = smoothBands.Length;
+            float rowHeight = height / bandCount;
+            float spacing = rowHeight * 0.2f;
+
+            for (int i = 0; i < bandCount; i++)
+            {
+                float magnitude = Math.Clamp(smoothBands[i], 0, 1);
+                float barWidth = magnitude * width;
+                float y = i * rowHeight;
+                float x = width - barWidth;
+
+                ds.FillRectangle(x, y + spacing, barWidth, rowHeight - spacing * 2, _visualizerBarsBrush);
+            }
+        }
+
+        private void DrawCircular(CanvasDrawingSession ds, float[] smoothBands, float width, float height)
+        {
+            int bandCount = smoothBands.Length;
+            float centerX = width / 2f;
+            float centerY = height / 2f;
+            float maxRadius = Math.Min(width, height) * 0.5f;
+            float innerRadius = maxRadius * 0.35f;
+            float radialRange = maxRadius - innerRadius;
+            // One spoke per band on each half of the circle (mirrored).
+            float strokeWidth = Math.Max(2f, maxRadius * 0.04f * (16f / bandCount));
+
+            for (int i = 0; i < bandCount; i++)
+            {
+                float magnitude = Math.Clamp(smoothBands[i], 0, 1);
+                float outerRadius = innerRadius + magnitude * radialRange;
+
+                // Right half: bass near top, treble toward bottom (clockwise from -90°).
+                float angleRight = (float)(-Math.PI / 2d + Math.PI * (i + 0.5d) / bandCount);
+                DrawCircularSpoke(ds, centerX, centerY, angleRight, innerRadius, outerRadius, strokeWidth);
+
+                // Left half: mirrored (counter-clockwise from -90°).
+                float angleLeft = (float)(-Math.PI / 2d - Math.PI * (i + 0.5d) / bandCount);
+                DrawCircularSpoke(ds, centerX, centerY, angleLeft, innerRadius, outerRadius, strokeWidth);
+            }
+        }
+
+        private void DrawCircularSpoke(
+            CanvasDrawingSession ds,
+            float centerX,
+            float centerY,
+            float angle,
+            float innerRadius,
+            float outerRadius,
+            float strokeWidth)
+        {
+            float cos = (float)Math.Cos(angle);
+            float sin = (float)Math.Sin(angle);
+
+            float x0 = centerX + cos * innerRadius;
+            float y0 = centerY + sin * innerRadius;
+            float x1 = centerX + cos * outerRadius;
+            float y1 = centerY + sin * outerRadius;
+
+            ds.DrawLine(x0, y0, x1, y1, _visualizerBarsBrush, strokeWidth);
         }
 
         private void ResizeBandBuffers(BandCount bandCount)

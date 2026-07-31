@@ -19,6 +19,7 @@ public sealed partial class AudioVisualizer : Control
     private readonly NAudioService _naudioService = new();
     private long _barsBrushColorToken;
     private long _backgroundBrushColorToken;
+    private VisualizationStyle _visualizationStyle = VisualizationStyle.Mirrored;
 
     /// <summary>
     /// Gets or sets a value indicating whether audio capture and the Win2D animation are paused.
@@ -105,6 +106,31 @@ public sealed partial class AudioVisualizer : Control
 
         visualizer.ResizeBandBuffers(bandCount);
         visualizer._naudioService.SetBandCount(bandCount);
+    }
+
+    /// <summary>
+    /// Gets or sets the visual layout used to draw frequency bands.
+    /// </summary>
+    public VisualizationStyle VisualizationStyle
+    {
+        get => (VisualizationStyle)GetValue(VisualizationStyleProperty);
+        set => SetValue(VisualizationStyleProperty, value);
+    }
+
+    /// <summary>
+    /// Identifies the <see cref="VisualizationStyle"/> dependency property.
+    /// </summary>
+    public static readonly DependencyProperty VisualizationStyleProperty = DependencyProperty
+        .Register(
+            nameof(VisualizationStyle),
+            typeof(VisualizationStyle),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(VisualizationStyle.Mirrored, OnVisualizationStyleChanged));
+
+    private static void OnVisualizationStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is AudioVisualizer visualizer && e.NewValue is VisualizationStyle style)
+            visualizer._visualizationStyle = style;
     }
 
     /// <summary>
