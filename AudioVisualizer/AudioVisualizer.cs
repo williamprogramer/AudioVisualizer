@@ -3,6 +3,7 @@ using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -23,6 +24,11 @@ namespace AudioVisualizer
         /// An array to store the latest audio frequency bands received from the audio service.
         /// </summary>
         private float[] _latestBands = new float[NAudioService.BandCount];
+
+        /// <summary>
+        /// Occurs when audio capture fails in a non-recoverable way (for example, start failure or exhausted device rebind retries).
+        /// </summary>
+        public event EventHandler<AudioVisualizerErrorEventArgs>? Error;
 
         /// <summary>
         /// Initializes a new instance of the AudioVisualizer control.
@@ -49,6 +55,8 @@ namespace AudioVisualizer
 
                 _naudioService.BandsAvailable -= OnBandsAvailable;
                 _naudioService.BandsAvailable += OnBandsAvailable;
+                _naudioService.Error -= OnCaptureError;
+                _naudioService.Error += OnCaptureError;
                 _naudioService.StartCapture();
             }
         }
@@ -56,7 +64,20 @@ namespace AudioVisualizer
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             _naudioService.BandsAvailable -= OnBandsAvailable;
+            _naudioService.Error -= OnCaptureError;
             _naudioService.StopCapture();
+        }
+
+        private void OnCaptureError(object? sender, AudioVisualizerErrorEventArgs e)
+        {
+            DispatcherQueue dispatcher = DispatcherQueue;
+            if (dispatcher is null || dispatcher.HasThreadAccess)
+            {
+                Error?.Invoke(this, e);
+                return;
+            }
+
+            dispatcher.TryEnqueue(() => Error?.Invoke(this, e));
         }
 
         private void OnActualThemeChanged(FrameworkElement sender, object args)

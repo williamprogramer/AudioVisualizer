@@ -1,7 +1,5 @@
+using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace AudioVisualizer_SampleApp;
 
@@ -14,5 +12,11 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
+        Visualizer.Error += OnVisualizerError;
+    }
+
+    private void OnVisualizerError(object? sender, AudioVisualizer.AudioVisualizerErrorEventArgs e)
+    {
+        Debug.WriteLine($"[AudioVisualizer] {e.Message} (Recoverable={e.IsRecoverable}) {e.Exception}");
     }
 }

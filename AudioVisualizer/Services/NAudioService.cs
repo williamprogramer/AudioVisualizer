@@ -5,7 +5,7 @@ using NAudio.Wave;
 
 namespace AudioVisualizer.Services
 {
-    internal sealed class NAudioService : IDisposable
+    internal sealed partial class NAudioService : IDisposable
     {
         internal const int BandCount = 12;
 
@@ -27,6 +27,7 @@ namespace AudioVisualizer.Services
         private bool _notificationsRegistered;
 
         public event EventHandler<float[]>? BandsAvailable;
+        public event EventHandler<AudioVisualizerErrorEventArgs>? Error;
 
         public NAudioService()
         {
@@ -44,8 +45,15 @@ namespace AudioVisualizer.Services
                     return;
 
                 _running = true;
-                EnsureNotificationsRegistered();
-                StartCaptureCore();
+                try
+                {
+                    EnsureNotificationsRegistered();
+                    StartCaptureCore();
+                }
+                catch (Exception ex)
+                {
+                    RaiseError("Failed to start audio capture.", ex, isRecoverable: false);
+                }
             }
         }
 
@@ -147,7 +155,7 @@ namespace AudioVisualizer.Services
             if (_disposed || !_running)
                 return;
 
-            _ = RestartCaptureAsync();
+            _ = RestartCaptureAsync(null);
         }
 
         private void OnRecordingStopped(object? sender, StoppedEventArgs e)
@@ -155,10 +163,10 @@ namespace AudioVisualizer.Services
             if (_disposed || !_running || _isRestarting)
                 return;
 
-            _ = RestartCaptureAsync();
+            _ = RestartCaptureAsync(e.Exception);
         }
 
-        private async Task RestartCaptureAsync()
+        private async Task RestartCaptureAsync(Exception? stopException)
         {
             lock (_sync)
             {
@@ -167,6 +175,8 @@ namespace AudioVisualizer.Services
 
                 _isRestarting = true;
             }
+
+            Exception? lastException = stopException;
 
             try
             {
@@ -190,11 +200,17 @@ namespace AudioVisualizer.Services
 
                         return;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // New endpoint (e.g. Bluetooth) may not be ready yet.
+                        lastException = ex;
                     }
                 }
+
+                RaiseError(
+                    "Failed to restart audio capture after the output device changed.",
+                    lastException,
+                    isRecoverable: false);
             }
             finally
             {
@@ -203,6 +219,11 @@ namespace AudioVisualizer.Services
                     _isRestarting = false;
                 }
             }
+        }
+
+        private void RaiseError(string message, Exception? exception, bool isRecoverable)
+        {
+            Error?.Invoke(this, new AudioVisualizerErrorEventArgs(message, exception, isRecoverable));
         }
 
         private void OnAudioData(object? sender, WaveInEventArgs e)

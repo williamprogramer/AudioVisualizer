@@ -75,6 +75,17 @@ Example:
     VisualizerBarsBrush="Cyan" />
 ```
 
+### Error handling
+
+Subscribe to the `Error` event to learn when capture fails in a non-recoverable way (for example, start failure or exhausted device-rebind retries). Teardown failures on a dead audio endpoint are swallowed internally and do not raise this event.
+
+```csharp
+visualizer.Error += (sender, e) =>
+{
+    // e.Message, e.Exception, e.IsRecoverable
+};
+```
+
 ## Audio device changes
 
 When the default Windows output device changes, the control restarts loopback capture on the new endpoint automatically. Bars should resume within a few seconds without restarting the app.

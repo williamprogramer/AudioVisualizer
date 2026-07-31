@@ -21,7 +21,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <AudioVisualizer:AudioVisualizer Grid.Row="0"
+        <AudioVisualizer:AudioVisualizer x:Name="Visualizer"
+                                         Grid.Row="0"
                                          Grid.Column="0"
                                          VisualizerBackgroundBrush="Transparent"
                                          Paused="False"
