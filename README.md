@@ -6,11 +6,12 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 
 ## Features
 
-- Real-time WASAPI loopback capture with 12-band FFT analysis (log-spaced ~20 Hz–14 kHz)
+- Real-time WASAPI capture with 12-band FFT analysis (log-spaced ~20 Hz–14 kHz)
+- `AudioSourceMode` to capture system output (loopback), microphone input, or both
 - Mirrored bar layout (bass in the center, highs outward; bars grow above and below center)
 - Customizable colors via WinUI theme resources, with live updates for theme and accent changes
 - `Paused` property to pause or resume the Win2D animation
-- Automatic capture rebind when the default output device changes (e.g. speakers ↔ Bluetooth)
+- Automatic capture rebind when the default output or input device changes
 - Smooth animations using Win2D rendering
 - Responsive design that adapts to any container size
 - Built for WinUI 3 on Windows 10+ (x86, x64, and ARM64)
@@ -28,16 +29,16 @@ Nuget: https://www.nuget.org/packages/AudioVisualizer
 Install via NuGet Package Manager:
 
 ```bash
-dotnet add package AudioVisualizer --version 1.1.0
+dotnet add package AudioVisualizer --version 1.2.0
 ```
 
 Or via Package Manager Console:
 
 ```
-Install-Package AudioVisualizer -Version 1.1.0
+Install-Package AudioVisualizer -Version 1.2.0
 ```
 
-**Current stable version: 1.1.0**
+**Current stable version: 1.2.0**
 
 ## Quick Start
 
@@ -50,6 +51,7 @@ Add the visualizer to your XAML page:
     <Grid>
         <local:AudioVisualizer
             x:Name="Visualizer"
+            AudioSourceMode="Output"
             Paused="False"
             VisualizerBackgroundBrush="Transparent"
             VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
@@ -57,12 +59,13 @@ Add the visualizer to your XAML page:
 </Page>
 ```
 
-The visualizer will automatically capture system audio and display the real-time visualization.
+With the default `AudioSourceMode="Output"`, the visualizer captures system playback (WASAPI loopback) and displays the real-time visualization.
 
 ## Customization
 
-You can customize appearance and playback with these properties:
+You can customize appearance, capture source, and playback with these properties:
 
+- **AudioSourceMode** - Which audio to analyze: `Output` (default loopback), `Input` (microphone), or `Both` (merge with per-band maximum)
 - **VisualizerBackgroundBrush** - Background color of the visualization area
 - **VisualizerBarsBrush** - Color of the frequency bars (prefer a `SolidColorBrush` or theme resource for live accent/theme updates)
 - **Paused** - When `true`, pauses the Win2D animation; when `false`, resumes it
@@ -72,10 +75,15 @@ Example:
 ```xml
 <local:AudioVisualizer
     x:Name="Visualizer"
+    AudioSourceMode="Both"
     Paused="False"
     VisualizerBackgroundBrush="Black"
     VisualizerBarsBrush="Cyan" />
 ```
+
+### Microphone privacy
+
+`Input` and `Both` use the default Windows capture device. The host app must be allowed microphone access under **Settings → Privacy & security → Microphone**. If permission is denied in `Both` mode, the control raises `Error` for the mic failure and keeps visualizing output when loopback still works.
 
 ### Error handling
 
@@ -90,7 +98,7 @@ Visualizer.Error += (sender, e) =>
 
 ## Audio device changes
 
-When the default Windows output device changes, the control restarts loopback capture on the new endpoint automatically. Bars should resume within a few seconds without restarting the app.
+When the default Windows output or input device changes (depending on `AudioSourceMode`), the control restarts capture on the new endpoint automatically. Bars should resume within a few seconds without restarting the app.
 
 ## Dependencies
 

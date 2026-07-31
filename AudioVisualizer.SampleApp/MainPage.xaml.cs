@@ -15,6 +15,19 @@ public sealed partial class MainPage : Page
         Visualizer.Error += OnVisualizerError;
     }
 
+    private void OnSourceModeChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (Visualizer is null || SourceModeCombo.SelectedItem is not ComboBoxItem item)
+            return;
+
+        Visualizer.AudioSourceMode = item.Tag switch
+        {
+            "Input" => AudioVisualizer.AudioSourceMode.Input,
+            "Both" => AudioVisualizer.AudioSourceMode.Both,
+            _ => AudioVisualizer.AudioSourceMode.Output
+        };
+    }
+
     private void OnVisualizerError(object? sender, AudioVisualizer.AudioVisualizerErrorEventArgs e)
     {
         Debug.WriteLine($"[AudioVisualizer] {e.Message} (Recoverable={e.IsRecoverable}) {e.Exception}");

@@ -46,6 +46,31 @@ public sealed partial class AudioVisualizer : Control
     }
 
     /// <summary>
+    /// Gets or sets which audio endpoints are captured for visualization.
+    /// </summary>
+    public AudioSourceMode AudioSourceMode
+    {
+        get => (AudioSourceMode)GetValue(AudioSourceModeProperty);
+        set => SetValue(AudioSourceModeProperty, value);
+    }
+
+    /// <summary>
+    /// Identifies the <see cref="AudioSourceMode"/> dependency property.
+    /// </summary>
+    public static readonly DependencyProperty AudioSourceModeProperty = DependencyProperty
+        .Register(
+            nameof(AudioSourceMode),
+            typeof(AudioSourceMode),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(AudioSourceMode.Output, OnAudioSourceModeChanged));
+
+    private static void OnAudioSourceModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is AudioVisualizer visualizer && e.NewValue is AudioSourceMode mode)
+            visualizer._naudioService.SetSourceMode(mode);
+    }
+
+    /// <summary>
     /// Identifies the VisualizerBackgroundBrush dependency property.
     /// </summary>
     public static readonly DependencyProperty VisualizerBackgroundBrushProperty = DependencyProperty

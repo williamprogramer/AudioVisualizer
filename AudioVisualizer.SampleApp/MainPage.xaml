@@ -14,16 +14,26 @@
         Use 'dotnet new winui-page' to create additional pages and navigate to them via
         the Frame in MainWindow (RootFrame).
     -->
-    <Grid>
+    <Grid RowSpacing="12" Padding="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock VerticalAlignment="Center" Text="Audio source" />
+            <ComboBox x:Name="SourceModeCombo"
+                      MinWidth="140"
+                      SelectionChanged="OnSourceModeChanged">
+                <ComboBoxItem Content="Output" Tag="Output" IsSelected="True" />
+                <ComboBoxItem Content="Input" Tag="Input" />
+                <ComboBoxItem Content="Both" Tag="Both" />
+            </ComboBox>
+        </StackPanel>
+
         <AudioVisualizer:AudioVisualizer x:Name="Visualizer"
-                                         Grid.Row="0"
-                                         Grid.Column="0"
+                                         Grid.Row="1"
+                                         AudioSourceMode="Output"
                                          VisualizerBackgroundBrush="Transparent"
                                          Paused="False"
                                          VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />

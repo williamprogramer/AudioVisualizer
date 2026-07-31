@@ -57,6 +57,7 @@ namespace AudioVisualizer
                 _naudioService.BandsAvailable += OnBandsAvailable;
                 _naudioService.Error -= OnCaptureError;
                 _naudioService.Error += OnCaptureError;
+                _naudioService.SetSourceMode(AudioSourceMode);
                 _naudioService.StartCapture();
             }
         }
