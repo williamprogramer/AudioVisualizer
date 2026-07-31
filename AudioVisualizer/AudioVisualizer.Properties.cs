@@ -21,7 +21,9 @@ public sealed partial class AudioVisualizer : Control
     private long _backgroundBrushColorToken;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the audio visualization is paused.
+    /// Gets or sets a value indicating whether audio capture and the Win2D animation are paused.
+    /// When <see langword="true"/>, capture is stopped and the canvas animation is paused.
+    /// When <see langword="false"/>, capture and animation resume.
     /// </summary>
     public bool Paused
     {
@@ -30,20 +32,26 @@ public sealed partial class AudioVisualizer : Control
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the audio visualization is paused.
+    /// Identifies the <see cref="Paused"/> dependency property.
     /// </summary>
     public static readonly DependencyProperty PausedProperty = DependencyProperty
         .Register(nameof(Paused), typeof(bool), typeof(AudioVisualizer), new PropertyMetadata(false, OnPausedChanged));
 
     private static void OnPausedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is AudioVisualizer visualizer && visualizer._canvas != null)
-        {
-            if (e.NewValue is bool newValue)
-            {
-                visualizer._canvas.Paused = newValue;
-            }
-        }
+        if (d is not AudioVisualizer visualizer || e.NewValue is not bool paused)
+            return;
+
+        // Template not applied yet; OnApplyTemplate will honor Paused.
+        if (visualizer._canvas is null)
+            return;
+
+        visualizer._canvas.Paused = paused;
+
+        if (paused)
+            visualizer._naudioService.StopCapture();
+        else
+            visualizer._naudioService.StartCapture();
     }
 
     /// <summary>

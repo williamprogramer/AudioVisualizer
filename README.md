@@ -10,7 +10,7 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 - `AudioSourceMode` to capture system output (loopback), microphone input, or both
 - Mirrored bar layout (bass in the center, highs outward; bars grow above and below center)
 - Customizable colors via WinUI theme resources, with live updates for theme and accent changes
-- `Paused` property to pause or resume the Win2D animation
+- `Paused` property to pause or resume audio capture and the Win2D animation
 - Automatic capture rebind when the default output or input device changes
 - Smooth animations using Win2D rendering
 - Responsive design that adapts to any container size
@@ -66,9 +66,9 @@ With the default `AudioSourceMode="Output"`, the visualizer captures system play
 You can customize appearance, capture source, and playback with these properties:
 
 - **AudioSourceMode** - Which audio to analyze: `Output` (default loopback), `Input` (microphone), or `Both` (merge with per-band maximum)
+- **Paused** - When `true`, stops audio capture and pauses the Win2D animation; when `false`, resumes both
 - **VisualizerBackgroundBrush** - Background color of the visualization area
 - **VisualizerBarsBrush** - Color of the frequency bars (prefer a `SolidColorBrush` or theme resource for live accent/theme updates)
-- **Paused** - When `true`, pauses the Win2D animation; when `false`, resumes it
 
 Example:
 

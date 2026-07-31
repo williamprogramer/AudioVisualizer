@@ -58,7 +58,9 @@ namespace AudioVisualizer
                 _naudioService.Error -= OnCaptureError;
                 _naudioService.Error += OnCaptureError;
                 _naudioService.SetSourceMode(AudioSourceMode);
-                _naudioService.StartCapture();
+                _canvas.Paused = Paused;
+                if (!Paused)
+                    _naudioService.StartCapture();
             }
         }
 
