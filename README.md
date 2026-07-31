@@ -6,8 +6,9 @@ A modern WinUI 3 audio visualizer control that displays real-time audio visualiz
 
 ## Features
 
-- Real-time WASAPI capture with 12-band FFT analysis (log-spaced ~20 Hz–14 kHz)
+- Real-time WASAPI capture with configurable FFT bands (8 / 16 / 32 / 64, log-spaced ~20 Hz–14 kHz)
 - `AudioSourceMode` to capture system output (loopback), microphone input, or both
+- `BandCount` to choose how many frequency bands are displayed (default `Sixteen`)
 - Mirrored bar layout (bass in the center, highs outward; bars grow above and below center)
 - Customizable colors via WinUI theme resources, with live updates for theme and accent changes
 - `Paused` property to pause or resume audio capture and the Win2D animation
@@ -52,6 +53,7 @@ Add the visualizer to your XAML page:
         <local:AudioVisualizer
             x:Name="Visualizer"
             AudioSourceMode="Output"
+            BandCount="Sixteen"
             Paused="False"
             VisualizerBackgroundBrush="Transparent"
             VisualizerBarsBrush="{ThemeResource AccentFillColorDefaultBrush}" />
@@ -66,6 +68,7 @@ With the default `AudioSourceMode="Output"`, the visualizer captures system play
 You can customize appearance, capture source, and playback with these properties:
 
 - **AudioSourceMode** - Which audio to analyze: `Output` (default loopback), `Input` (microphone), or `Both` (merge with per-band maximum)
+- **BandCount** - Number of frequency bands: `Eight`, `Sixteen` (default), `ThirtyTwo`, or `SixtyFour`
 - **Paused** - When `true`, stops audio capture and pauses the Win2D animation; when `false`, resumes both
 - **VisualizerBackgroundBrush** - Background color of the visualization area
 - **VisualizerBarsBrush** - Color of the frequency bars (prefer a `SolidColorBrush` or theme resource for live accent/theme updates)
@@ -76,6 +79,7 @@ Example:
 <local:AudioVisualizer
     x:Name="Visualizer"
     AudioSourceMode="Both"
+    BandCount="ThirtyTwo"
     Paused="False"
     VisualizerBackgroundBrush="Black"
     VisualizerBarsBrush="Cyan" />

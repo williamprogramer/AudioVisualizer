@@ -80,6 +80,34 @@ public sealed partial class AudioVisualizer : Control
     }
 
     /// <summary>
+    /// Gets or sets how many frequency bands are analyzed and displayed.
+    /// </summary>
+    public BandCount BandCount
+    {
+        get => (BandCount)GetValue(BandCountProperty);
+        set => SetValue(BandCountProperty, value);
+    }
+
+    /// <summary>
+    /// Identifies the <see cref="BandCount"/> dependency property.
+    /// </summary>
+    public static readonly DependencyProperty BandCountProperty = DependencyProperty
+        .Register(
+            nameof(BandCount),
+            typeof(BandCount),
+            typeof(AudioVisualizer),
+            new PropertyMetadata(BandCount.Sixteen, OnBandCountChanged));
+
+    private static void OnBandCountChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not AudioVisualizer visualizer || e.NewValue is not BandCount bandCount)
+            return;
+
+        visualizer.ResizeBandBuffers(bandCount);
+        visualizer._naudioService.SetBandCount(bandCount);
+    }
+
+    /// <summary>
     /// Identifies the VisualizerBackgroundBrush dependency property.
     /// </summary>
     public static readonly DependencyProperty VisualizerBackgroundBrushProperty = DependencyProperty

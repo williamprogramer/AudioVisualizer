@@ -7,18 +7,19 @@ namespace AudioVisualizer.Services
 {
     internal sealed partial class NAudioService : IDisposable
     {
-        internal const int BandCount = 12;
-
         private const int MaxRestartAttempts = 3;
         private const int RestartDelayMs = 500;
         private const int FftSize = 1024;
+        private const int DefaultBandCount = (int)BandCount.Sixteen;
 
         private readonly object _sync = new();
         private readonly DefaultDeviceNotificationClient _notificationClient;
         private readonly float[] _fftBufferOut = new float[FftSize];
         private readonly float[] _fftBufferIn = new float[FftSize];
-        private readonly float[] _latestOutBands = new float[BandCount];
-        private readonly float[] _latestInBands = new float[BandCount];
+
+        private float[] _latestOutBands = new float[DefaultBandCount];
+        private float[] _latestInBands = new float[DefaultBandCount];
+        private int _bandCount = DefaultBandCount;
 
         private WasapiLoopbackCapture? _loopbackCapture;
         private WasapiCapture? _micCapture;
@@ -39,6 +40,20 @@ namespace AudioVisualizer.Services
         public NAudioService()
         {
             _notificationClient = new DefaultDeviceNotificationClient(OnDefaultDeviceChanged);
+        }
+
+        public void SetBandCount(BandCount bandCount)
+        {
+            int count = (int)bandCount;
+            lock (_sync)
+            {
+                if (_disposed || _bandCount == count)
+                    return;
+
+                _bandCount = count;
+                _latestOutBands = new float[count];
+                _latestInBands = new float[count];
+            }
         }
 
         public void SetSourceMode(AudioSourceMode mode)
@@ -415,19 +430,25 @@ namespace AudioVisualizer.Services
 
         private void PublishBands()
         {
-            float[] bands = new float[BandCount];
+            int bandCount = _bandCount;
+            float[] outBands = _latestOutBands;
+            float[] inBands = _latestInBands;
+            if (outBands.Length != bandCount || inBands.Length != bandCount)
+                return;
+
+            float[] bands = new float[bandCount];
 
             switch (_sourceMode)
             {
                 case AudioSourceMode.Input:
-                    Array.Copy(_latestInBands, bands, BandCount);
+                    Array.Copy(inBands, bands, bandCount);
                     break;
                 case AudioSourceMode.Both:
-                    for (int i = 0; i < BandCount; i++)
-                        bands[i] = Math.Max(_latestOutBands[i], _latestInBands[i]);
+                    for (int i = 0; i < bandCount; i++)
+                        bands[i] = Math.Max(outBands[i], inBands[i]);
                     break;
                 default:
-                    Array.Copy(_latestOutBands, bands, BandCount);
+                    Array.Copy(outBands, bands, bandCount);
                     break;
             }
 
@@ -436,6 +457,7 @@ namespace AudioVisualizer.Services
 
         private static void ProcessFFT(float[] fftBuffer, int sampleRate, float[] destinationBands)
         {
+            int bandCount = destinationBands.Length;
             Complex[] fft = new Complex[FftSize];
             for (int i = 0; i < FftSize; i++)
             {
@@ -446,15 +468,15 @@ namespace AudioVisualizer.Services
             FastFourierTransform.FFT(true, (int)Math.Log2(FftSize), fft);
 
             float minF = 20f, maxF = 14000f;
-            float[] freqEdges = new float[BandCount + 1];
+            float[] freqEdges = new float[bandCount + 1];
 
-            for (int i = 0; i < BandCount + 1; i++)
+            for (int i = 0; i < bandCount + 1; i++)
             {
-                float t = i / (float)BandCount;
+                float t = i / (float)bandCount;
                 freqEdges[i] = minF * (float)Math.Pow(maxF / minF, t);
             }
 
-            for (int b = 0; b < BandCount; b++)
+            for (int b = 0; b < bandCount; b++)
             {
                 int minIndex = (int)(freqEdges[b] / (sampleRate / (float)FftSize));
                 int maxIndex = (int)(freqEdges[b + 1] / (sampleRate / (float)FftSize));

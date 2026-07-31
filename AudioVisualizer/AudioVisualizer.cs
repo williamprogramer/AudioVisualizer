@@ -15,15 +15,8 @@ namespace AudioVisualizer
     /// </summary>
     public sealed partial class AudioVisualizer : Control
     {
-        /// <summary>
-        /// An array to store the smoothed audio frequency bands for visualization.
-        /// </summary>
-        private readonly float[] _smoothBands = new float[NAudioService.BandCount];
-
-        /// <summary>
-        /// An array to store the latest audio frequency bands received from the audio service.
-        /// </summary>
-        private float[] _latestBands = new float[NAudioService.BandCount];
+        private float[] _smoothBands = new float[16];
+        private float[] _latestBands = new float[16];
 
         /// <summary>
         /// Occurs when audio capture fails in a non-recoverable way (for example, start failure or exhausted device rebind retries).
@@ -57,6 +50,7 @@ namespace AudioVisualizer
                 _naudioService.BandsAvailable += OnBandsAvailable;
                 _naudioService.Error -= OnCaptureError;
                 _naudioService.Error += OnCaptureError;
+                _naudioService.SetBandCount(BandCount);
                 _naudioService.SetSourceMode(AudioSourceMode);
                 _canvas.Paused = Paused;
                 if (!Paused)
@@ -117,7 +111,11 @@ namespace AudioVisualizer
 
         private void OnBandsAvailable(object? sender, float[] bands)
         {
-            _latestBands = bands;
+            float[] latest = _latestBands;
+            if (bands.Length != latest.Length)
+                return;
+
+            Array.Copy(bands, latest, latest.Length);
         }
 
         private void OnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
@@ -133,10 +131,14 @@ namespace AudioVisualizer
         /// <param name="args">The event arguments containing update information.</param>
         private void OnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
         {
-            for (int i = 0; i < NAudioService.BandCount; i++)
+            // Snapshot references so a BandCount change on the UI thread cannot resize mid-loop.
+            float[] smoothBands = _smoothBands;
+            float[] latestBands = _latestBands;
+            int count = Math.Min(smoothBands.Length, latestBands.Length);
+            for (int i = 0; i < count; i++)
             {
-                _smoothBands[i] = Lerp(_smoothBands[i], _latestBands[i], 0.2f);
-                _smoothBands[i] = Math.Max(_smoothBands[i], 0.02f);
+                smoothBands[i] = Lerp(smoothBands[i], latestBands[i], 0.2f);
+                smoothBands[i] = Math.Max(smoothBands[i], 0.02f);
             }
         }
 
@@ -146,7 +148,13 @@ namespace AudioVisualizer
             float width = (float)sender.Size.Width;
             float height = (float)sender.Size.Height;
             ds.Clear(_visualizerBackgroundBrush!.Color);
-            int bandCount = NAudioService.BandCount;
+
+            // Snapshot so Length and indexing stay consistent if BandCount changes mid-draw.
+            float[] smoothBands = _smoothBands;
+            int bandCount = smoothBands.Length;
+            if (bandCount == 0)
+                return;
+
             int totalBars = bandCount * 2;
             float barWidth = width / totalBars;
             float spacing = barWidth * 0.2f;
@@ -155,7 +163,7 @@ namespace AudioVisualizer
             for (int i = 0; i < totalBars; i++)
             {
                 int bandIndex = (i < bandCount) ? bandCount - 1 - i : i - bandCount;
-                float magnitude = Math.Clamp(_smoothBands[bandIndex], 0, 1);
+                float magnitude = Math.Clamp(smoothBands[bandIndex], 0, 1);
                 float barHeight = magnitude * height;
                 float halfHeight = barHeight / 2f;
 
@@ -164,6 +172,16 @@ namespace AudioVisualizer
 
                 ds.FillRectangle(x + spacing, y, barWidth - spacing * 2, barHeight, _visualizerBarsBrush);
             }
+        }
+
+        private void ResizeBandBuffers(BandCount bandCount)
+        {
+            int count = (int)bandCount;
+            if (_smoothBands.Length == count && _latestBands.Length == count)
+                return;
+
+            _smoothBands = new float[count];
+            _latestBands = new float[count];
         }
 
         /// <summary>

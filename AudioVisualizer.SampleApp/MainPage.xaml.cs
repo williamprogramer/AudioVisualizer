@@ -40,6 +40,20 @@ public sealed partial class MainPage : Page
         Visualizer.Paused = toggle.IsOn;
     }
 
+    private void OnBandCountChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (Visualizer is null || BandCountCombo.SelectedItem is not ComboBoxItem item)
+            return;
+
+        Visualizer.BandCount = item.Tag switch
+        {
+            "Eight" => AudioVisualizer.BandCount.Eight,
+            "ThirtyTwo" => AudioVisualizer.BandCount.ThirtyTwo,
+            "SixtyFour" => AudioVisualizer.BandCount.SixtyFour,
+            _ => AudioVisualizer.BandCount.Sixteen
+        };
+    }
+
     private void OnBarsBrushChanged(object sender, SelectionChangedEventArgs e)
     {
         if (Visualizer is null || BarsBrushCombo.SelectedItem is not ComboBoxItem item || item.Tag is not string tag)
